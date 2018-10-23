@@ -2,6 +2,9 @@ import os
 import threading
 import django
 import requests
+import datetime
+from django.utils import timezone
+import pytz
 from bs4 import BeautifulSoup
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nparse.settings")
@@ -14,6 +17,7 @@ class Nparse:
     PREF = "https://www.nasdaq.com/symbol/"
     POST_HIST = "/historical/"
     POST_INST = "/insider-trades/"
+    HIST_ROWS = 6
 
     def __init__(self, n=3):
         self.n = n
@@ -52,13 +56,38 @@ class Nparse:
         :return:
         '''
         HistoryRecord.objects.all().delete()
+        count = 0
         for company in task_list:
             # url = https://www.nasdaq.com/symbol/<ticker>/historical
             url = "".join([self.PREF, company.slug, self.POST_HIST])
             soup = BeautifulSoup(self.get_content(url), 'html.parser')
             tdata = soup.find(id="historicalContainer").find_all('td')
-            for td in tdata:
-                print(td.text.strip())
+            for item in self.get_hist_data(tdata):
+                ts = dict({
+                    'company': company,
+                    'open': item[1].replace(',', ''),
+                    'high': item[2].replace(',', ''),
+                    'low': item[3].replace(',', ''),
+                    'close': item[4].replace(',', ''),
+                    'volume': item[5].replace(',', ''),
+                })
+                try:
+                    ts['date'] = datetime.datetime.strptime(item[0], '%m/%d/%Y')
+
+                except ValueError:
+                    ts['date'] = timezone.now()
+                rec = HistoryRecord(**ts)
+                rec.save()
+                count += 1
+
+    def get_hist_data(self, tdata):
+        """
+        return generator of table records for tickets history
+        :param tdata:
+        :return:
+        """
+        for i in range(0, len(tdata), self.HIST_ROWS):
+            yield [''.join(x.text.split()) for x in tdata[i: i+self.HIST_ROWS]]
 
     def run(self):
         """
@@ -92,4 +121,4 @@ class Nparse:
 if __name__ == '__main__':
     p = Nparse(n=3)
     p.init_companies('tickers.txt')
-    # p.run()
+    p.run()

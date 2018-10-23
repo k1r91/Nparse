@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'nasdaq',
         'USER': 'nasdaq',
-        'PASSWORD': '',
+        'PASSWORD': '123qwefgh',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -116,7 +116,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

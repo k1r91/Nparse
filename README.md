@@ -13,3 +13,7 @@ psql nasdaq postgres;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to nasdaq;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public to nasdaq;
 GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public to nasdaq;
+
+
+# to parse data run
+python3 nparce_exec.py
