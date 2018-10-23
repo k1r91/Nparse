@@ -57,7 +57,8 @@ class Nparse:
             url = "".join([self.PREF, company.slug, self.POST_HIST])
             soup = BeautifulSoup(self.get_content(url), 'html.parser')
             tdata = soup.find(id="historicalContainer").find_all('td')
-            print(tdata)
+            for td in tdata:
+                print(td.text.strip())
 
     def run(self):
         """
