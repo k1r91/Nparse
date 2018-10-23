@@ -92,4 +92,4 @@ class Nparse:
 if __name__ == '__main__':
     p = Nparse(n=3)
     p.init_companies('tickers.txt')
-    p.run()
+    # p.run()
